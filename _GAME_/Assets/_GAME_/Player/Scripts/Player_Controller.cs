@@ -35,6 +35,8 @@ public class Player_Controller : MonoBehaviour
     private Vector2 moveDirection = Vector2.zero;
     private Direction currentDirection = Direction.Right;
 
+    private readonly int animationMoveRight = Animator.StringToHash("MoveRight");
+
     #endregion
 
     #region  Tick
@@ -77,9 +79,9 @@ public class Player_Controller : MonoBehaviour
 
     #region Animation Logic
 
-    private calculateCurrentDirection()
+    private void calculateCurrentDirection()
     {
-        if (moveDirection != 0){
+        if (moveDirection.x != 0){
             if (moveDirection.x > 0)
             {
                 currentDirection = Direction.Right;
@@ -102,6 +104,11 @@ public class Player_Controller : MonoBehaviour
         else if (currentDirection == Direction.Right)
         {
             playerSpriteRenderer.flipX = false;
+        }
+
+        if (moveDirection.SqrMagnitude() > 0)
+        {
+            playerAnimator.CrossFade(animationMoveRight, 0);
         }
     }
     #endregion
