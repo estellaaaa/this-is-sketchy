@@ -1,16 +1,17 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class IntroTextController : MonoBehaviour
 {
     public TextMeshProUGUI textField; // Text display for the intro
     public Image backgroundImage;    // Background image
     public Sprite[] backgroundFrames; // Array of background frames (sprites)
-    public float frameSwitchInterval = 0.1f;
-
+    public float frameSwitchInterval = 0.1f; // Interval for switching background frames
+    public float fadeDuration = 2.0f; // Duration of the fade effect
+    public string nextSceneName = "Phase 1"; // Name of the next scene to load
     public string[] introTexts = new string[]
     {
         "wak...p",
@@ -27,20 +28,15 @@ public class IntroTextController : MonoBehaviour
     };
 
     private int currentTextIndex = 0;
+    private CanvasGroup fadeCanvasGroup; // Fade canvas for transition
 
     void Start()
     {
-        // Display the first text and set the initial background frame
-        if (introTexts.Length > 0)
-        {
-            DisplayText();
-        }
-        else
-        {
-            Debug.LogWarning("No intro texts provided!");
-        }
+        // Create fade canvas for transitions
+        CreateFadeCanvas();
 
-        // Start the background animation
+        // Display the first text and start background animation
+        DisplayText();
         if (backgroundFrames.Length > 0)
         {
             StartCoroutine(AnimateBackground());
@@ -49,7 +45,7 @@ public class IntroTextController : MonoBehaviour
 
     void Update()
     {
-        if (Input.anyKeyDown) // Advance on any key press
+        if (Input.anyKeyDown) // Advance text on any key press
         {
             currentTextIndex++;
             if (currentTextIndex < introTexts.Length)
@@ -58,7 +54,7 @@ public class IntroTextController : MonoBehaviour
             }
             else
             {
-                EndIntro();
+                StartCoroutine(EndIntro());
             }
         }
     }
@@ -71,20 +67,58 @@ public class IntroTextController : MonoBehaviour
     IEnumerator AnimateBackground()
     {
         int frameIndex = 0;
-
         while (true) // Infinite loop for continuous animation
         {
-            // Cycle through frames
             backgroundImage.sprite = backgroundFrames[frameIndex];
-            frameIndex = (frameIndex + 1) % backgroundFrames.Length; // Loop back to first frame
-            yield return new WaitForSeconds(frameSwitchInterval); // Wait before switching to next frame
+            frameIndex = (frameIndex + 1) % backgroundFrames.Length;
+            yield return new WaitForSeconds(frameSwitchInterval);
         }
     }
 
-    void EndIntro()
+    IEnumerator EndIntro()
     {
-        // Action after intro (e.g., transition to another scene)
-        Debug.Log("Intro finished!");
-        // UnityEngine.SceneManagement.SceneManager.LoadScene("Phase 1"); // Replace with your scene name
+        // Fade to black
+        yield return StartCoroutine(FadeScreen(0f, 1f));
+
+        // Wait for 3 seconds before switching scenes
+        yield return new WaitForSeconds(3f);
+
+        // Load the next scene
+        SceneManager.LoadScene(nextSceneName);
+    }
+
+    void CreateFadeCanvas()
+    {
+        GameObject fadeCanvas = new GameObject("FadeCanvas");
+        Canvas canvas = fadeCanvas.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
+        fadeCanvasGroup = fadeCanvas.AddComponent<CanvasGroup>();
+        fadeCanvasGroup.alpha = 0f;
+
+        fadeCanvas.AddComponent<GraphicRaycaster>();
+
+        // Create a black fullscreen image
+        GameObject fadeImageObject = new GameObject("FadeImage");
+        fadeImageObject.transform.SetParent(fadeCanvas.transform, false);
+
+        Image fadeImage = fadeImageObject.AddComponent<Image>();
+        fadeImage.color = Color.black; // Black screen
+        RectTransform rectTransform = fadeImage.GetComponent<RectTransform>();
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.one;
+        rectTransform.sizeDelta = Vector2.zero;
+    }
+
+    IEnumerator FadeScreen(float startAlpha, float endAlpha)
+    {
+        float elapsedTime = 0f;
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            fadeCanvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, elapsedTime / fadeDuration);
+            yield return null;
+        }
+        fadeCanvasGroup.alpha = endAlpha;
     }
 }

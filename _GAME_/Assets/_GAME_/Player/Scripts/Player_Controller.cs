@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [SelectionBase]
-
 public class Player_Controller : MonoBehaviour
 {
     #region Enums
@@ -26,9 +25,9 @@ public class Player_Controller : MonoBehaviour
     [SerializeField] private Rigidbody2D playerRigidbody;
     [SerializeField] private Animator playerAnimator;
     [SerializeField] private SpriteRenderer playerSpriteRenderer;
+    [SerializeField] private GameObject textBox; // Reference to the text box
 
     #endregion
-
 
     #region Internal Data
 
@@ -43,6 +42,12 @@ public class Player_Controller : MonoBehaviour
 
     private void Update()
     {
+        if (textBox.activeSelf) // Check if the text box is active
+        {
+            moveDirection = Vector2.zero; // Disable movement
+            return;
+        }
+
         getInput();
         calculateCurrentDirection();
         UpdateAnimation();
@@ -50,11 +55,13 @@ public class Player_Controller : MonoBehaviour
 
     private void FixedUpdate()
     {
-        MovementUpdate();
+        if (!textBox.activeSelf) // Check if the text box is active
+        {
+            MovementUpdate();
+        }
     }
 
     #endregion
-
 
     #region Input Logic
 
@@ -81,7 +88,8 @@ public class Player_Controller : MonoBehaviour
 
     private void calculateCurrentDirection()
     {
-        if (moveDirection.x != 0){
+        if (moveDirection.x != 0)
+        {
             if (moveDirection.x > 0)
             {
                 currentDirection = Direction.Right;
