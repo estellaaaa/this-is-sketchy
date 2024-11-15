@@ -1,12 +1,9 @@
-using System.Collections;
 using UnityEngine;
 using TMPro;
 
 public class Phase_1_Script : MonoBehaviour
 {
-    public TextMeshProUGUI textField; // Text display for the phase
-    public GameObject textBox; // Reference to the text box
-    public string[] phaseTexts = new string[]
+    private string[] phaseTexts = new string[]
     {
         "oh you're finally awake",
         "sorry that that i cannot greet you in person...",
@@ -34,7 +31,7 @@ public class Phase_1_Script : MonoBehaviour
 
     void Start()
     {
-        // Display the first text
+        // Display the first text immediately when the scene starts
         DisplayText();
     }
 
@@ -50,19 +47,19 @@ public class Phase_1_Script : MonoBehaviour
             else
             {
                 // Hide the text box to allow player movement
-                textBox.SetActive(false);
+                TextBoxController.Instance.HideTextBox();
             }
         }
 
         // Check if the text box is inactive and show the task box
-        if (!textBox.activeSelf && currentTextIndex >= phaseTexts.Length)
+        if (!TextBoxController.Instance.IsTextBoxActive() && currentTextIndex >= phaseTexts.Length)
         {
-            TaskBoxController.Instance.ShowTaskBox("Find the wizard in the north, next to a tower.");
+            TaskBoxController.Instance.ShowTaskBox("find the wizard in the north, next to a tower and press 'e' to interact with him");
         }
     }
 
     void DisplayText()
     {
-        textField.text = phaseTexts[currentTextIndex];
+        TextBoxController.Instance.ShowTextBox(phaseTexts[currentTextIndex]);
     }
 }
