@@ -53,6 +53,12 @@ public class Phase_1_Script : MonoBehaviour
                 textBox.SetActive(false);
             }
         }
+
+        // Check if the text box is inactive and show the task box
+        if (!textBox.activeSelf && currentTextIndex >= phaseTexts.Length)
+        {
+            TaskBoxController.Instance.ShowTaskBox("Current Task: Find the wizard in the north, next to a tower.");
+        }
     }
 
     void DisplayText()
