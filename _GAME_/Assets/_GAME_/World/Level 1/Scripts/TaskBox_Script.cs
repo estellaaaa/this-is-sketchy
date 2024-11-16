@@ -64,13 +64,15 @@ public class TaskBoxController : MonoBehaviour
         return itemCounters.ContainsKey(itemName) && itemCounters[itemName] >= itemGoals[itemName];
     }
 
-    private void UpdateTaskBoxText()
+    public void UpdateTaskBoxText()
     {
-        string taskText = "Items Collected:\n";
+        string taskText = "Collected:\n";
         foreach (var item in itemCounters)
         {
             taskText += $"{item.Key}: {item.Value}/{itemGoals[item.Key]}\n";
         }
         taskField.text = taskText;
     }
+
+    
 }

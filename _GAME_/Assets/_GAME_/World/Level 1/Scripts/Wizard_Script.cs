@@ -15,11 +15,34 @@ public class WizardScript : MonoBehaviour
         "walk around the to find the pieces of wood",
     };
 
+    private string[] newTaskTexts = new string[]
+    {
+        "Great job collecting the sticks!",
+        "Now, you must find the magic stone to complete the pencil.",
+        "The magic stone is hidden deep in the forest.",
+        "Good luck, hero!",
+    };
+
     private int currentTextIndex = 0;
     private bool nearWizard = false;
     public float interactionDistance = 2.0f; // Distance within which the player can interact
     private Transform playerTransform;
     private bool isDisplayingText = false;
+    private bool initialTaskStarted = false;
+
+    public static WizardScript Instance { get; private set; }
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     void Start()
     {
@@ -35,6 +58,9 @@ public class WizardScript : MonoBehaviour
         {
             Debug.LogError("Player not found");
         }
+
+        // Show the initial task box
+        UpdateTaskBox();
     }
 
     void Update()
@@ -53,6 +79,7 @@ public class WizardScript : MonoBehaviour
                 if (Input.GetButtonDown("Interact"))
                 {
                     Debug.Log("E key pressed near wizard");
+                    CheckTaskCompletion();
                     DisplayWizardText();
                 }
             }
@@ -73,12 +100,8 @@ public class WizardScript : MonoBehaviour
                     isDisplayingText = false;
                     currentTextIndex = 0; // Reset the index for future interactions
 
-                    // Show the task box again
-                    if (TaskBoxController.Instance != null)
-                    {
-                        Debug.Log("Showing task box again");
-                        TaskBoxController.Instance.ShowTaskBox("find the 4 sticks to fix the pencil");
-                    }
+                    // Update the task box text based on the current task
+                    UpdateTaskBox();
                 }
             }
         }
@@ -115,6 +138,64 @@ public class WizardScript : MonoBehaviour
             {
                 Debug.LogError("TextBoxController Instance is null!");
             }
+        }
+    }
+
+    void CheckTaskCompletion()
+    {
+        if (TaskBoxController.Instance.IsGoalReached("Stick"))
+        {
+            Debug.Log("Task completed: All sticks collected.");
+            wizardTexts = newTaskTexts;
+            currentTextIndex = 0;
+
+            // Hide the old task box
+            TaskBoxController.Instance.HideTaskBox();
+
+            // Set the new task goal
+            TaskBoxController.Instance.SetItemGoal("Rubber", 15);
+
+            // Show the new task box
+            TaskBoxController.Instance.ShowTaskBox("find the magic stone to complete the pencil");
+
+            // Update the task box text
+            TaskBoxController.Instance.UpdateTaskBoxText();
+        }
+        else
+        {
+            Debug.Log("Task not completed yet.");
+
+            // Start the initial task if it hasn't been started yet
+            if (!initialTaskStarted)
+            {
+                initialTaskStarted = true;
+                StartInitialTask();
+            }
+        }
+    }
+
+    void UpdateTaskBox()
+    {
+        if (TaskBoxController.Instance != null)
+        {
+            if (TaskBoxController.Instance.IsGoalReached("Stick"))
+            {
+                TaskBoxController.Instance.ShowTaskBox("find the magic stone to complete the pencil");
+            }
+            else
+            {
+                TaskBoxController.Instance.ShowTaskBox("find the 4 sticks to fix the pencil");
+            }
+        }
+    }
+
+    void StartInitialTask()
+    {
+        // Notify the ItemSpawner to start spawning sticks
+        ItemSpawner itemSpawner = FindObjectOfType<ItemSpawner>();
+        if (itemSpawner != null)
+        {
+            itemSpawner.StartSpawningSticks();
         }
     }
 }
