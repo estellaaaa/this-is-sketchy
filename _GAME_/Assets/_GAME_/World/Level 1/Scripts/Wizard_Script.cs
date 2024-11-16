@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class WizardScript : MonoBehaviour
 {
@@ -31,6 +32,8 @@ public class WizardScript : MonoBehaviour
     private bool initialTaskStarted = false;
 
     public static WizardScript Instance { get; private set; }
+
+    public ObjectSpawner objectSpawner; // Reference to the ObjectSpawner
 
     void Awake()
     {
@@ -152,14 +155,12 @@ public class WizardScript : MonoBehaviour
             // Hide the old task box
             TaskBoxController.Instance.HideTaskBox();
 
-            // Set the new task goal
-            TaskBoxController.Instance.SetItemGoal("Rubber", 15);
+            // Start spawning objects before showing the new task
+            Debug.Log("Starting to spawn objects before showing the new task");
+            objectSpawner.StartSpawning();
 
-            // Show the new task box
-            TaskBoxController.Instance.ShowTaskBox("find the magic stone to complete the pencil");
-
-            // Update the task box text
-            TaskBoxController.Instance.UpdateTaskBoxText();
+            // Wait for the objects to finish spawning before showing the new task
+            StartCoroutine(WaitForObjectsToFinishSpawning());
         }
         else
         {
@@ -172,6 +173,24 @@ public class WizardScript : MonoBehaviour
                 StartInitialTask();
             }
         }
+    }
+
+    IEnumerator WaitForObjectsToFinishSpawning()
+    {
+        // Wait for the objects to finish spawning
+        Debug.Log("Waiting for objects to finish spawning");
+        yield return StartCoroutine(objectSpawner.SpawnAndMoveObjects());
+
+        // Set the new task goal
+        Debug.Log("Setting new task goal: Rubber");
+        TaskBoxController.Instance.SetItemGoal("Rubber", 15);
+
+        // Show the new task box
+        Debug.Log("Showing new task box: find the magic stone to complete the pencil");
+        TaskBoxController.Instance.ShowTaskBox("find the magic stone to complete the pencil");
+
+        // Update the task box text
+        TaskBoxController.Instance.UpdateTaskBoxText();
     }
 
     void UpdateTaskBox()
