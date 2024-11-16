@@ -8,7 +8,11 @@ public class WizardScript : MonoBehaviour
         "I have been waiting for you.",
         "Your journey is just beginning.",
         "You must defeat the evil that plagues this land.",
-        "Good luck, brave hero!"
+        "For that, you will need to create tools",
+        "and gather items",
+        "unfortunately, the pencil which I used to create you broke during the process",
+        "so you will have to find the pieces to repair it",
+        "walk around the to find the pieces of wood",
     };
 
     private int currentTextIndex = 0;
@@ -68,6 +72,13 @@ public class WizardScript : MonoBehaviour
                     TextBoxController.Instance.HideTextBox();
                     isDisplayingText = false;
                     currentTextIndex = 0; // Reset the index for future interactions
+
+                    // Show the task box again
+                    if (TaskBoxController.Instance != null)
+                    {
+                        Debug.Log("Showing task box again");
+                        TaskBoxController.Instance.ShowTaskBox("find the 4 sticks to fix the pencil");
+                    }
                 }
             }
         }
