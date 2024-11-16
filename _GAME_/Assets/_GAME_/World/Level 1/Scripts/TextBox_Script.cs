@@ -30,18 +30,37 @@ public class TextBoxController : MonoBehaviour
     public void ShowTextBox(string text)
     {
         Debug.Log("Showing text box with text: " + text);
+        if (textBox == null)
+        {
+            Debug.LogError("textBox is not assigned!");
+            return;
+        }
+        if (textField == null)
+        {
+            Debug.LogError("textField is not assigned!");
+            return;
+        }
         textBox.SetActive(true);
         textField.text = text;
+        Debug.Log("Text box should now be active" + textBox.activeSelf);
     }
 
     public void HideTextBox()
     {
         Debug.Log("Hiding text box");
-        textBox.SetActive(false);
+        if (textBox != null)
+        {
+            textBox.SetActive(false);
+            Debug.Log("Text box should now be inactive. Active state: " + textBox.activeSelf);
+        }
+        else
+        {
+            Debug.LogError("textBox is not assigned!");
+        }
     }
 
     public bool IsTextBoxActive()
     {
-        return textBox.activeSelf;
+        return textBox != null && textBox.activeSelf;
     }
 }

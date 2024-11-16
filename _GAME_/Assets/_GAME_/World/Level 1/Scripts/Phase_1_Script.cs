@@ -28,6 +28,7 @@ public class Phase_1_Script : MonoBehaviour
     };
 
     private int currentTextIndex = 0;
+    private bool isPhaseTextActive = true;
 
     void Start()
     {
@@ -37,7 +38,7 @@ public class Phase_1_Script : MonoBehaviour
 
     void Update()
     {
-        if (Input.anyKeyDown) // Advance text on any key press
+        if (Input.anyKeyDown && isPhaseTextActive) // Advance text on any key press
         {
             currentTextIndex++;
             if (currentTextIndex < phaseTexts.Length)
@@ -48,18 +49,23 @@ public class Phase_1_Script : MonoBehaviour
             {
                 // Hide the text box to allow player movement
                 TextBoxController.Instance.HideTextBox();
+                ShowTaskBox();
+                isPhaseTextActive = false;
             }
-        }
-
-        // Check if the text box is inactive and show the task box
-        if (!TextBoxController.Instance.IsTextBoxActive() && currentTextIndex >= phaseTexts.Length)
-        {
-            TaskBoxController.Instance.ShowTaskBox("find the wizard in the north, next to a tower and press 'e' to interact with him");
         }
     }
 
     void DisplayText()
     {
         TextBoxController.Instance.ShowTextBox(phaseTexts[currentTextIndex]);
+    }
+
+    void ShowTaskBox()
+    {
+        // Check if the text box is inactive and show the task box
+        if (!TextBoxController.Instance.IsTextBoxActive())
+        {
+            TaskBoxController.Instance.ShowTaskBox("Find the wizard in the north, next to a tower and press 'E' to interact with him.");
+        }
     }
 }

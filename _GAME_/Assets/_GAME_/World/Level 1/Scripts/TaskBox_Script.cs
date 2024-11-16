@@ -31,4 +31,9 @@ public class TaskBoxController : MonoBehaviour
         taskBox.SetActive(true);
         taskField.text = taskText;
     }
+
+        public void HideTaskBox()
+    {
+        taskBox.SetActive(false);
+    }
 }
