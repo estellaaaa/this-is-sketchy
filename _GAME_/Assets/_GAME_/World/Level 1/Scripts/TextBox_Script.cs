@@ -23,8 +23,8 @@ public class TextBoxController : MonoBehaviour
     void Start()
     {
         Debug.Log("TextBoxController Start");
-        // Ensure the text box is initially enabled
-        textBox.SetActive(true);
+        // Ensure the text box is initially disabled
+        textBox.SetActive(false);
     }
 
     public void ShowTextBox(string text)
