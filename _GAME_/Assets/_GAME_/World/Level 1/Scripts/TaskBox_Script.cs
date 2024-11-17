@@ -73,6 +73,4 @@ public class TaskBoxController : MonoBehaviour
         }
         taskField.text = taskText;
     }
-
-    
 }

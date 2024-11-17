@@ -2086,6 +2086,7 @@ MonoBehaviour:
   - {fileID: 2071113700}
   moveSpeed: 2
   delayBetweenSpawns: 1
+  isSpawningComplete: 0
 --- !u!1 &1334908425
 GameObject:
   m_ObjectHideFlags: 0

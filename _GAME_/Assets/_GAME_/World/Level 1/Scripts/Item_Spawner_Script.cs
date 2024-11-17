@@ -17,7 +17,9 @@ public class ItemSpawner : MonoBehaviour
     public void StartSpawningSticks()
     {
         canSpawn = true;
-        SpawnNextItem();
+        currentSpawnIndex = 0; // Ensure we're starting fresh from the first spawn point
+        Debug.Log("Started spawning sticks.");
+        SpawnNextItem(); // Immediately spawn the first stick
     }
 
     public void SpawnNextItem()
@@ -42,12 +44,19 @@ public class ItemSpawner : MonoBehaviour
         }
         else
         {
-            Debug.Log("No more spawn points available");
+            Debug.Log("No more spawn points available for sticks.");
         }
     }
 
     public void StickCollected()
     {
         currentStick = null;
+
+        // Check if the goal for sticks is reached
+        if (TaskBoxController.Instance.IsGoalReached("Stick"))
+        {
+            Debug.Log("All sticks collected. Advancing to the next task.");
+            WizardScript.Instance.AdvanceToNextTask(); // Ensure Wizard_Script has a singleton instance
+        }
     }
 }

@@ -37,7 +37,7 @@ public class Stick : MonoBehaviour
         ItemSpawner itemSpawner = FindObjectOfType<ItemSpawner>();
         if (itemSpawner != null)
         {
-            Debug.Log("Notifying ItemSpawner to spawn the next stick");
+            Debug.Log("Notifying ItemSpawner to spawn the next stick.");
             itemSpawner.StickCollected();
             itemSpawner.SpawnNextItem();
         }
@@ -46,7 +46,8 @@ public class Stick : MonoBehaviour
         TaskBoxController.Instance.UpdateItemCounter("Stick");
 
         // Destroy the stick
-        Debug.Log("Destroying the stick");
+        Debug.Log("Destroying the stick.");
         Destroy(gameObject);
     }
+
 }

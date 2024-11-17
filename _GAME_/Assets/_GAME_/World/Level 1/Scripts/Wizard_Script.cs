@@ -4,28 +4,31 @@ using System.Collections.Generic;
 
 public class WizardScript : MonoBehaviour
 {
-    private string[] wizardTexts = new string[]
+    private List<string[]> taskTexts = new List<string[]>
     {
-        "Welcome, hero!",
-        "I have been waiting for you.",
-        "Your journey is just beginning.",
-        "You must defeat the evil that plagues this land.",
-        "For that, you will need to create tools",
-        "and gather items",
-        "unfortunately, the pencil which I used to create you broke during the process",
-        "so you will have to find the pieces to repair it",
-        "walk around the to find the pieces of wood",
-    };
-
-    private string[] newTaskTexts = new string[]
-    {
-        "Great job collecting the sti... wait NO!",
-        "The evil are back leaving their mark",
-        "Be quick, we have to stop them",
-        "For that we need to collect pieced of rubber",
-        "to craft a tool to defeat them",
-        "THE RUBBER!",
-        "QUICKLY!!! FIND THE PIECES!1!!!!1!",
+        new string[]
+        {
+            "Welcome, hero!",
+            "I have been waiting for you.",
+            "Your journey is just beginning.",
+            "You must defeat the evil that plagues this land.",
+            "For that, you will need to create tools",
+            "and gather items",
+            "Unfortunately, the pencil which I used to create you broke during the process.",
+            "So you will have to find the pieces to repair it.",
+            "Walk around to find the pieces of wood.",
+        },
+        new string[]
+        {
+            "Great job collecting the sti... wait NO!",
+            "The evil are back leaving their mark.",
+            "Be quick, we have to stop them!",
+            "For that, we need to collect pieces of rubber.",
+            "To craft a tool to defeat them.",
+            "THE ERASER!",
+            "QUICKLY!!! FIND THE PIECES!!!",
+        }
+        // Add more task-specific texts if needed
     };
 
     private int currentTextIndex = 0;
@@ -57,6 +60,7 @@ public class WizardScript : MonoBehaviour
     void Start()
     {
         Debug.Log("WizardScript Start");
+
         // Find the player GameObject by tag
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
@@ -66,54 +70,59 @@ public class WizardScript : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Player not found");
+            Debug.LogError("Player not found! Interactions will not work.");
         }
 
         // Initialize tasks
         InitializeTasks();
 
-        // Show the initial task box
+        if (tasks.Count == 0)
+        {
+            Debug.LogError("No tasks initialized. Please check the InitializeTasks method.");
+            return; // Exit to prevent further errors
+        }
+
+        // Check if objectSpawner is assigned
+        if (objectSpawner == null)
+        {
+            Debug.LogError("ObjectSpawner is not assigned in WizardScript!");
+            return;
+        }
+
+        // Initialize task box and set it to the first task
         UpdateTaskBox();
     }
+
 
     void Update()
     {
         if (playerTransform != null)
         {
-            // Check the distance between the player and the wizard
             float distance = Vector3.Distance(playerTransform.position, transform.position);
             nearWizard = distance <= interactionDistance;
 
             if (nearWizard && !isDisplayingText)
             {
-                Debug.Log("Player is near the wizard");
-
-                // Check if the "Interact" button is pressed
                 if (Input.GetButtonDown("Interact"))
                 {
-                    Debug.Log("E key pressed near wizard");
                     CheckTaskCompletion();
                     DisplayWizardText();
                 }
             }
 
-            // Advance text on any key press if text is being displayed
             if (isDisplayingText && Input.anyKeyDown)
             {
                 currentTextIndex++;
-                if (currentTextIndex < wizardTexts.Length)
+                if (currentTextIndex < taskTexts[currentTaskIndex].Length)
                 {
                     DisplayWizardText();
                 }
                 else
                 {
-                    // Hide the text box when all texts have been displayed
-                    Debug.Log("Hiding text box after displaying all texts");
+                    // End of text; hide and reset
                     TextBoxController.Instance.HideTextBox();
                     isDisplayingText = false;
-                    currentTextIndex = 0; // Reset the index for future interactions
-
-                    // Update the task box text based on the current task
+                    currentTextIndex = 0;
                     UpdateTaskBox();
                 }
             }
@@ -122,29 +131,23 @@ public class WizardScript : MonoBehaviour
 
     void DisplayWizardText()
     {
-        Debug.Log("DisplayWizardText called");
-        if (currentTextIndex < wizardTexts.Length)
+        if (currentTaskIndex >= taskTexts.Count)
         {
-            Debug.Log($"Displaying wizard text[{currentTextIndex}]: {wizardTexts[currentTextIndex]}");
+            Debug.LogError($"No text defined for task index {currentTaskIndex}");
+            return;
+        }
 
-            // Check TextBoxController references
+        string[] activeTexts = taskTexts[currentTaskIndex];
+        if (currentTextIndex < activeTexts.Length)
+        {
             if (TextBoxController.Instance != null)
             {
-                // Hide the task box if it is active
                 if (TaskBoxController.Instance != null && TaskBoxController.Instance.taskBox.activeSelf)
                 {
-                    Debug.Log("Task box is active, hiding it now");
                     TaskBoxController.Instance.HideTaskBox();
-                    Debug.Log("Task box hidden");
-                }
-                else
-                {
-                    Debug.Log("Task box is not active or TaskBoxController.Instance is null");
                 }
 
-                Debug.Log("Showing text box");
-                TextBoxController.Instance.ShowTextBox(wizardTexts[currentTextIndex]);
-                Debug.Log($"Wizard text shown: {wizardTexts[currentTextIndex]}");
+                TextBoxController.Instance.ShowTextBox(activeTexts[currentTextIndex]);
                 isDisplayingText = true;
             }
             else
@@ -154,115 +157,111 @@ public class WizardScript : MonoBehaviour
         }
     }
 
-    void CheckTaskCompletion()
-    {
-        if (TaskBoxController.Instance.IsGoalReached(tasks[currentTaskIndex].itemName))
-        {
-            Debug.Log($"Task completed: {tasks[currentTaskIndex].description}");
-            wizardTexts = newTaskTexts;
-            currentTextIndex = 0;
 
-            // Hide the old task box
+void CheckTaskCompletion()
+{
+    if (TaskBoxController.Instance.IsGoalReached(tasks[currentTaskIndex].itemName))
+    {
+        currentTextIndex = 0;
+
+        if (TaskBoxController.Instance != null)
+        {
             TaskBoxController.Instance.HideTaskBox();
-
-            // Start spawning objects before showing the new task
-            Debug.Log("Starting to spawn objects before showing the new task");
-            StartCoroutine(WaitForObjectsToFinishSpawning());
-        }
-        else
-        {
-            Debug.Log("Task not completed yet.");
-
-            // Start the initial task if it hasn't been started yet
-            if (!initialTaskStarted)
-            {
-                initialTaskStarted = true;
-                StartInitialTask();
-            }
-        }
-    }
-
-    IEnumerator WaitForObjectsToFinishSpawning()
-    {
-        // Wait for the objects to finish spawning
-        Debug.Log("Waiting for objects to finish spawning");
-        yield return StartCoroutine(objectSpawner.SpawnAndMoveObjects());
-
-        // Wait until the spawning is complete
-        while (!objectSpawner.isSpawningComplete)
-        {
-            yield return null;
         }
 
         // Advance to the next task
         AdvanceToNextTask();
+
+        // Start spawning objects
+        StartCoroutine(WaitForObjectsToFinishSpawning());
     }
+    else
+    {
+        if (!initialTaskStarted)
+        {
+            initialTaskStarted = true;
+            StartInitialTask();
+        }
+    }
+}
+
+
+    IEnumerator WaitForObjectsToFinishSpawning()
+    {
+        yield return StartCoroutine(objectSpawner.SpawnAndMoveObjects());
+
+        float timeout = 10f;
+        while (!objectSpawner.isSpawningComplete && timeout > 0f)
+        {
+            timeout -= Time.deltaTime;
+            yield return null;
+        }
+
+        AdvanceToNextTask();  // This ensures that once the spawning is done, the next task is shown.
+    }
+
 
     void UpdateTaskBox()
     {
         if (TaskBoxController.Instance != null)
         {
-            if (TaskBoxController.Instance.IsGoalReached(tasks[currentTaskIndex].itemName))
-            {
-                // Check if the objects have finished moving
-                if (objectSpawner.isSpawningComplete)
-                {
-                    TaskBoxController.Instance.ShowTaskBox(tasks[currentTaskIndex].description);
-                }
-                else
-                {
-                    Debug.Log("Waiting for objects to finish moving before showing the next task.");
-                }
-            }
-            else
-            {
-                TaskBoxController.Instance.ShowTaskBox(tasks[currentTaskIndex].description);
-            }
+            TaskBoxController.Instance.ShowTaskBox(tasks[currentTaskIndex].description);
         }
     }
 
     void StartInitialTask()
     {
-        // Notify the ItemSpawner to start spawning sticks
         ItemSpawner itemSpawner = FindObjectOfType<ItemSpawner>();
         if (itemSpawner != null)
         {
+            Debug.Log("Starting to spawn sticks.");
             itemSpawner.StartSpawningSticks();
         }
+        else
+        {
+            Debug.LogError("ItemSpawner not found!");
+        }
     }
+
 
     void InitializeTasks()
     {
         tasks.Add(new Task("Stick", 4, "find the 4 sticks to fix the pencil"));
-        tasks.Add(new Task("Rubber", 15, "find the magic stone to complete the pencil"));
-        // Add more tasks as needed
+        tasks.Add(new Task("Rubber", 15, "look for the 15 rubber pieces to defeat the evil"));
     }
 
-    void AdvanceToNextTask()
+    public void AdvanceToNextTask()
     {
         if (currentTaskIndex < tasks.Count - 1)
         {
             currentTaskIndex++;
             TaskBoxController.Instance.SetItemGoal(tasks[currentTaskIndex].itemName, tasks[currentTaskIndex].goal);
             UpdateTaskBox();
+
+            // Reset text index before displaying the new task's text
+            currentTextIndex = 0;
+            DisplayWizardText();  // Show next task text when advancing.
         }
         else
         {
-            Debug.Log("All tasks completed!");
+            TaskBoxController.Instance.HideTaskBox();
+            DisplayWizardText();  // Final text after completing all tasks
         }
     }
-}
 
-public class Task
-{
-    public string itemName;
-    public int goal;
-    public string description;
 
-    public Task(string itemName, int goal, string description)
+
+    public class Task
     {
-        this.itemName = itemName;
-        this.goal = goal;
-        this.description = description;
+        public string itemName;
+        public int goal;
+        public string description;
+
+        public Task(string itemName, int goal, string description)
+        {
+            this.itemName = itemName;
+            this.goal = goal;
+            this.description = description;
+        }
     }
 }
