@@ -29,9 +29,6 @@ public class MainMenu : MonoBehaviour
         {
             Debug.LogWarning("No background frames assigned");
         }
-
-        // Assign custom font and color to all button texts
-        AssignCustomFontAndColorToButtons();
     }
 
     void Update()
