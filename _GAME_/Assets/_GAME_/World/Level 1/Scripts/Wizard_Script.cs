@@ -190,6 +190,7 @@ void CheckTaskCompletion()
         }
 
         AdvanceToNextTask();
+    }
 
 
     void UpdateTaskBox()
