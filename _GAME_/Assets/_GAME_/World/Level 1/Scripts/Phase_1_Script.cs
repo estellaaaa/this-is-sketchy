@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class Phase_1_Script : MonoBehaviour
 {
@@ -29,6 +30,7 @@ public class Phase_1_Script : MonoBehaviour
 
     private int currentTextIndex = 0;
     private bool isPhaseTextActive = true;
+    private bool isMainMenuActive = false; // Track if the main menu is active
 
     void Start()
     {
@@ -53,6 +55,12 @@ public class Phase_1_Script : MonoBehaviour
                 isPhaseTextActive = false;
             }
         }
+
+        // Check for Escape key press to toggle the main menu
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ToggleMainMenu();
+        }
     }
 
     void DisplayText()
@@ -66,6 +74,24 @@ public class Phase_1_Script : MonoBehaviour
         if (!TextBoxController.Instance.IsTextBoxActive())
         {
             TaskBoxController.Instance.ShowTaskBox("Find the wizard in the north, next to a tower and press 'E' to interact with him.");
+        }
+    }
+
+    public void ToggleMainMenu()
+    {
+        if (isMainMenuActive)
+        {
+            // Resume the game
+            Time.timeScale = 1;
+            SceneManager.UnloadSceneAsync("Main Menu"); // Unload the main menu scene
+            isMainMenuActive = false;
+        }
+        else
+        {
+            // Pause the game and load the main menu
+            Time.timeScale = 0;
+            SceneManager.LoadScene("Main Menu", LoadSceneMode.Additive); // Load the main menu scene additively
+            isMainMenuActive = true;
         }
     }
 }
