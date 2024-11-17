@@ -11,9 +11,12 @@ public class ObjectSpawner : MonoBehaviour
     public float moveSpeed = 2.0f; // Speed at which the objects move
     public float delayBetweenSpawns = 1.0f; // Delay between spawning each object
 
+    public bool isSpawningComplete = false; // Flag to indicate if spawning is complete
+
     public void StartSpawning()
     {
         Debug.Log("Starting to spawn objects");
+        isSpawningComplete = false;
         StartCoroutine(SpawnAndMoveObjects());
     }
 
@@ -38,6 +41,10 @@ public class ObjectSpawner : MonoBehaviour
             // Wait before spawning the next object
             yield return new WaitForSeconds(delayBetweenSpawns);
         }
+
+        // Set the flag to indicate that spawning is complete
+        isSpawningComplete = true;
+        Debug.Log("Spawning and moving complete");
     }
 
     private IEnumerator MoveObject(GameObject obj, Vector3 targetPosition)

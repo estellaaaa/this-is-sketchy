@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class WizardScript : MonoBehaviour
 {
@@ -18,10 +19,13 @@ public class WizardScript : MonoBehaviour
 
     private string[] newTaskTexts = new string[]
     {
-        "Great job collecting the sticks!",
-        "Now, you must find the magic stone to complete the pencil.",
-        "The magic stone is hidden deep in the forest.",
-        "Good luck, hero!",
+        "Great job collecting the sti... wait NO!",
+        "The evil are back leaving their mark",
+        "Be quick, we have to stop them",
+        "For that we need to collect pieced of rubber",
+        "to craft a tool to defeat them",
+        "THE RUBBER!",
+        "QUICKLY!!! FIND THE PIECES!1!!!!1!",
     };
 
     private int currentTextIndex = 0;
@@ -34,6 +38,9 @@ public class WizardScript : MonoBehaviour
     public static WizardScript Instance { get; private set; }
 
     public ObjectSpawner objectSpawner; // Reference to the ObjectSpawner
+
+    private List<Task> tasks = new List<Task>();
+    private int currentTaskIndex = 0;
 
     void Awake()
     {
@@ -61,6 +68,9 @@ public class WizardScript : MonoBehaviour
         {
             Debug.LogError("Player not found");
         }
+
+        // Initialize tasks
+        InitializeTasks();
 
         // Show the initial task box
         UpdateTaskBox();
@@ -146,9 +156,9 @@ public class WizardScript : MonoBehaviour
 
     void CheckTaskCompletion()
     {
-        if (TaskBoxController.Instance.IsGoalReached("Stick"))
+        if (TaskBoxController.Instance.IsGoalReached(tasks[currentTaskIndex].itemName))
         {
-            Debug.Log("Task completed: All sticks collected.");
+            Debug.Log($"Task completed: {tasks[currentTaskIndex].description}");
             wizardTexts = newTaskTexts;
             currentTextIndex = 0;
 
@@ -157,9 +167,6 @@ public class WizardScript : MonoBehaviour
 
             // Start spawning objects before showing the new task
             Debug.Log("Starting to spawn objects before showing the new task");
-            objectSpawner.StartSpawning();
-
-            // Wait for the objects to finish spawning before showing the new task
             StartCoroutine(WaitForObjectsToFinishSpawning());
         }
         else
@@ -181,29 +188,35 @@ public class WizardScript : MonoBehaviour
         Debug.Log("Waiting for objects to finish spawning");
         yield return StartCoroutine(objectSpawner.SpawnAndMoveObjects());
 
-        // Set the new task goal
-        Debug.Log("Setting new task goal: Rubber");
-        TaskBoxController.Instance.SetItemGoal("Rubber", 15);
+        // Wait until the spawning is complete
+        while (!objectSpawner.isSpawningComplete)
+        {
+            yield return null;
+        }
 
-        // Show the new task box
-        Debug.Log("Showing new task box: find the magic stone to complete the pencil");
-        TaskBoxController.Instance.ShowTaskBox("find the magic stone to complete the pencil");
-
-        // Update the task box text
-        TaskBoxController.Instance.UpdateTaskBoxText();
+        // Advance to the next task
+        AdvanceToNextTask();
     }
 
     void UpdateTaskBox()
     {
         if (TaskBoxController.Instance != null)
         {
-            if (TaskBoxController.Instance.IsGoalReached("Stick"))
+            if (TaskBoxController.Instance.IsGoalReached(tasks[currentTaskIndex].itemName))
             {
-                TaskBoxController.Instance.ShowTaskBox("find the magic stone to complete the pencil");
+                // Check if the objects have finished moving
+                if (objectSpawner.isSpawningComplete)
+                {
+                    TaskBoxController.Instance.ShowTaskBox(tasks[currentTaskIndex].description);
+                }
+                else
+                {
+                    Debug.Log("Waiting for objects to finish moving before showing the next task.");
+                }
             }
             else
             {
-                TaskBoxController.Instance.ShowTaskBox("find the 4 sticks to fix the pencil");
+                TaskBoxController.Instance.ShowTaskBox(tasks[currentTaskIndex].description);
             }
         }
     }
@@ -216,5 +229,40 @@ public class WizardScript : MonoBehaviour
         {
             itemSpawner.StartSpawningSticks();
         }
+    }
+
+    void InitializeTasks()
+    {
+        tasks.Add(new Task("Stick", 4, "find the 4 sticks to fix the pencil"));
+        tasks.Add(new Task("Rubber", 15, "find the magic stone to complete the pencil"));
+        // Add more tasks as needed
+    }
+
+    void AdvanceToNextTask()
+    {
+        if (currentTaskIndex < tasks.Count - 1)
+        {
+            currentTaskIndex++;
+            TaskBoxController.Instance.SetItemGoal(tasks[currentTaskIndex].itemName, tasks[currentTaskIndex].goal);
+            UpdateTaskBox();
+        }
+        else
+        {
+            Debug.Log("All tasks completed!");
+        }
+    }
+}
+
+public class Task
+{
+    public string itemName;
+    public int goal;
+    public string description;
+
+    public Task(string itemName, int goal, string description)
+    {
+        this.itemName = itemName;
+        this.goal = goal;
+        this.description = description;
     }
 }
