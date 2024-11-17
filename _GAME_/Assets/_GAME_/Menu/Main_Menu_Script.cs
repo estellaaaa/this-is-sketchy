@@ -6,20 +6,17 @@ using System.Collections;
 public class MainMenu : MonoBehaviour
 {
     public GameObject mainMenuUI;
-    public Image backgroundImage;    // Background image
-    public Sprite[] backgroundFrames; // Array of background frames (sprites)
-    public float frameSwitchInterval = 0.1f; // Interval for switching background frames
-    public Font customFont; // Custom font for buttons
+    public Image backgroundImage;   
+    public Sprite[] backgroundFrames; 
+    public float frameSwitchInterval = 0.1f; 
 
     void Start()
     {
         Debug.Log("MainMenu script started");
 
-        // Pause the game when the main menu is active
         Time.timeScale = 0;
         mainMenuUI.SetActive(true);
 
-        // Start background animation if frames are available
         if (backgroundFrames.Length > 0)
         {
             Debug.Log("Starting background animation");
@@ -33,7 +30,6 @@ public class MainMenu : MonoBehaviour
 
     void Update()
     {
-        // Check for Escape key press to resume the game
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             ResumeGame();
@@ -43,9 +39,8 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         Debug.Log("StartGame called");
-        // Resume the game when starting
         Time.timeScale = 1;
-        SceneManager.LoadScene("Intro"); // Replace "Intro" with the name of your game scene
+        SceneManager.LoadScene("Intro"); 
     }
 
     public void QuitGame()
@@ -57,15 +52,14 @@ public class MainMenu : MonoBehaviour
     public void ResumeGame()
     {
         Debug.Log("ResumeGame called");
-        // Resume the game
         Time.timeScale = 1;
-        SceneManager.UnloadSceneAsync("MainMenu"); // Unload the main menu scene
+        SceneManager.UnloadSceneAsync("MainMenu");
     }
 
     IEnumerator AnimateBackground()
     {
         int frameIndex = 0;
-        while (true) // Infinite loop for continuous animation
+        while (true)
         {
             Debug.Log($"Switching to frame {frameIndex}");
             backgroundImage.sprite = backgroundFrames[frameIndex];

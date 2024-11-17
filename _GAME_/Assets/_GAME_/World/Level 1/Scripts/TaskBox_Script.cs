@@ -6,8 +6,8 @@ public class TaskBoxController : MonoBehaviour
 {
     public static TaskBoxController Instance { get; private set; }
 
-    public GameObject taskBox; // Reference to the task box
-    public TextMeshProUGUI taskField; // Text display for the task
+    public GameObject taskBox;
+    public TextMeshProUGUI taskField;
 
     private Dictionary<string, int> itemCounters = new Dictionary<string, int>();
     private Dictionary<string, int> itemGoals = new Dictionary<string, int>();
@@ -26,7 +26,6 @@ public class TaskBoxController : MonoBehaviour
 
     void Start()
     {
-        // Ensure the task box is initially disabled
         taskBox.SetActive(false);
     }
 

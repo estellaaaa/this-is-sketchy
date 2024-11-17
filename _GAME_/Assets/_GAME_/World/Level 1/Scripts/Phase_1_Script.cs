@@ -30,17 +30,16 @@ public class Phase_1_Script : MonoBehaviour
 
     private int currentTextIndex = 0;
     private bool isPhaseTextActive = true;
-    private bool isMainMenuActive = false; // Track if the main menu is active
+    private bool isMainMenuActive = false;
 
     void Start()
     {
-        // Display the first text immediately when the scene starts
         DisplayText();
     }
 
     void Update()
     {
-        if (Input.anyKeyDown && isPhaseTextActive) // Advance text on any key press
+        if (Input.anyKeyDown && isPhaseTextActive)
         {
             currentTextIndex++;
             if (currentTextIndex < phaseTexts.Length)
@@ -49,14 +48,12 @@ public class Phase_1_Script : MonoBehaviour
             }
             else
             {
-                // Hide the text box to allow player movement
                 TextBoxController.Instance.HideTextBox();
                 ShowTaskBox();
                 isPhaseTextActive = false;
             }
         }
 
-        // Check for Escape key press to toggle the main menu
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             ToggleMainMenu();
@@ -70,7 +67,6 @@ public class Phase_1_Script : MonoBehaviour
 
     void ShowTaskBox()
     {
-        // Check if the text box is inactive and show the task box
         if (!TextBoxController.Instance.IsTextBoxActive())
         {
             TaskBoxController.Instance.ShowTaskBox("Find the wizard in the north, next to a tower and press 'E' to interact with him.");
@@ -81,16 +77,14 @@ public class Phase_1_Script : MonoBehaviour
     {
         if (isMainMenuActive)
         {
-            // Resume the game
             Time.timeScale = 1;
-            SceneManager.UnloadSceneAsync("Main Menu"); // Unload the main menu scene
+            SceneManager.UnloadSceneAsync("Main Menu");
             isMainMenuActive = false;
         }
         else
         {
-            // Pause the game and load the main menu
             Time.timeScale = 0;
-            SceneManager.LoadScene("Main Menu", LoadSceneMode.Additive); // Load the main menu scene additively
+            SceneManager.LoadScene("Main Menu", LoadSceneMode.Additive);
             isMainMenuActive = true;
         }
     }

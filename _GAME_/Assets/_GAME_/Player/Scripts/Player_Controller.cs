@@ -25,7 +25,7 @@ public class Player_Controller : MonoBehaviour
     [SerializeField] private Rigidbody2D playerRigidbody;
     [SerializeField] private Animator playerAnimator;
     [SerializeField] private SpriteRenderer playerSpriteRenderer;
-    [SerializeField] private GameObject textBox; // Reference to the text box
+    [SerializeField] private GameObject textBox; 
 
     #endregion
 
@@ -42,9 +42,9 @@ public class Player_Controller : MonoBehaviour
 
     private void Update()
     {
-        if (textBox.activeSelf) // Check if the text box is active
+        if (textBox.activeSelf) 
         {
-            moveDirection = Vector2.zero; // Disable movement
+            moveDirection = Vector2.zero; 
             return;
         }
 
@@ -55,7 +55,7 @@ public class Player_Controller : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!textBox.activeSelf) // Check if the text box is active
+        if (!textBox.activeSelf) 
         {
             MovementUpdate();
         }

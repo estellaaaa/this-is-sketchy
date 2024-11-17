@@ -33,7 +33,6 @@
 
 //     private void CollectRubber()
 //     {
-//         // Notify the ItemSpawner to spawn the next rubber
 //         ItemSpawner itemSpawner = FindObjectOfType<ItemSpawner>();
 //         if (itemSpawner != null)
 //         {
@@ -42,10 +41,8 @@
 //             itemSpawner.SpawnNextRubber();
 //         }
 
-//         // Update the task box counter for rubber
 //         TaskBoxController.Instance.UpdateItemCounter("Rubber");
 
-//         // Destroy the rubber
 //         Debug.Log("Destroying the rubber");
 //         Destroy(gameObject);
 //     }

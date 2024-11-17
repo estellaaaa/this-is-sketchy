@@ -6,12 +6,12 @@ using UnityEngine.SceneManagement;
 
 public class IntroTextController : MonoBehaviour
 {
-    public TextMeshProUGUI textField; // Text display for the intro
-    public Image backgroundImage;    // Background image
-    public Sprite[] backgroundFrames; // Array of background frames (sprites)
-    public float frameSwitchInterval = 0.1f; // Interval for switching background frames
-    public float fadeDuration = 2.0f; // Duration of the fade effect
-    public string nextSceneName = "Phase 1"; // Name of the next scene to load
+    public TextMeshProUGUI textField;
+    public Image backgroundImage;    
+    public Sprite[] backgroundFrames; 
+    public float frameSwitchInterval = 0.1f; 
+    public float fadeDuration = 2.0f; 
+    public string nextSceneName = "Phase 1"; 
     public string[] introTexts = new string[]
     {
         "wak...p",
@@ -28,14 +28,12 @@ public class IntroTextController : MonoBehaviour
     };
 
     private int currentTextIndex = 0;
-    private CanvasGroup fadeCanvasGroup; // Fade canvas for transition
+    private CanvasGroup fadeCanvasGroup; 
 
     void Start()
     {
-        // Create fade canvas for transitions
         CreateFadeCanvas();
 
-        // Display the first text and start background animation
         DisplayText();
         if (backgroundFrames.Length > 0)
         {
@@ -45,7 +43,7 @@ public class IntroTextController : MonoBehaviour
 
     void Update()
     {
-        if (Input.anyKeyDown) // Advance text on any key press
+        if (Input.anyKeyDown)
         {
             currentTextIndex++;
             if (currentTextIndex < introTexts.Length)
@@ -67,7 +65,7 @@ public class IntroTextController : MonoBehaviour
     IEnumerator AnimateBackground()
     {
         int frameIndex = 0;
-        while (true) // Infinite loop for continuous animation
+        while (true)
         {
             backgroundImage.sprite = backgroundFrames[frameIndex];
             frameIndex = (frameIndex + 1) % backgroundFrames.Length;
@@ -77,13 +75,10 @@ public class IntroTextController : MonoBehaviour
 
     IEnumerator EndIntro()
     {
-        // Fade to black
         yield return StartCoroutine(FadeScreen(0f, 1f));
 
-        // Wait for 3 seconds before switching scenes
         yield return new WaitForSeconds(3f);
 
-        // Load the next scene
         SceneManager.LoadScene(nextSceneName);
     }
 
@@ -98,12 +93,11 @@ public class IntroTextController : MonoBehaviour
 
         fadeCanvas.AddComponent<GraphicRaycaster>();
 
-        // Create a black fullscreen image
         GameObject fadeImageObject = new GameObject("FadeImage");
         fadeImageObject.transform.SetParent(fadeCanvas.transform, false);
 
         Image fadeImage = fadeImageObject.AddComponent<Image>();
-        fadeImage.color = Color.black; // Black screen
+        fadeImage.color = Color.black;
         RectTransform rectTransform = fadeImage.GetComponent<RectTransform>();
         rectTransform.anchorMin = Vector2.zero;
         rectTransform.anchorMax = Vector2.one;

@@ -28,19 +28,18 @@ public class WizardScript : MonoBehaviour
             "THE ERASER!",
             "QUICKLY!!! FIND THE PIECES!!!",
         }
-        // Add more task-specific texts if needed
     };
 
     private int currentTextIndex = 0;
     private bool nearWizard = false;
-    public float interactionDistance = 2.0f; // Distance within which the player can interact
+    public float interactionDistance = 2.0f;
     private Transform playerTransform;
     private bool isDisplayingText = false;
     private bool initialTaskStarted = false;
 
     public static WizardScript Instance { get; private set; }
 
-    public ObjectSpawner objectSpawner; // Reference to the ObjectSpawner
+    public ObjectSpawner objectSpawner;
 
     private List<Task> tasks = new List<Task>();
     private int currentTaskIndex = 0;
@@ -61,7 +60,6 @@ public class WizardScript : MonoBehaviour
     {
         Debug.Log("WizardScript Start");
 
-        // Find the player GameObject by tag
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
@@ -73,23 +71,20 @@ public class WizardScript : MonoBehaviour
             Debug.LogError("Player not found! Interactions will not work.");
         }
 
-        // Initialize tasks
         InitializeTasks();
 
         if (tasks.Count == 0)
         {
             Debug.LogError("No tasks initialized. Please check the InitializeTasks method.");
-            return; // Exit to prevent further errors
+            return;
         }
 
-        // Check if objectSpawner is assigned
         if (objectSpawner == null)
         {
             Debug.LogError("ObjectSpawner is not assigned in WizardScript!");
             return;
         }
 
-        // Initialize task box and set it to the first task
         UpdateTaskBox();
     }
 
@@ -119,7 +114,6 @@ public class WizardScript : MonoBehaviour
                 }
                 else
                 {
-                    // End of text; hide and reset
                     TextBoxController.Instance.HideTextBox();
                     isDisplayingText = false;
                     currentTextIndex = 0;
@@ -169,10 +163,8 @@ void CheckTaskCompletion()
             TaskBoxController.Instance.HideTaskBox();
         }
 
-        // Advance to the next task
         AdvanceToNextTask();
 
-        // Start spawning objects
         StartCoroutine(WaitForObjectsToFinishSpawning());
     }
     else
@@ -197,8 +189,7 @@ void CheckTaskCompletion()
             yield return null;
         }
 
-        AdvanceToNextTask();  // This ensures that once the spawning is done, the next task is shown.
-    }
+        AdvanceToNextTask();
 
 
     void UpdateTaskBox()
@@ -238,14 +229,13 @@ void CheckTaskCompletion()
             TaskBoxController.Instance.SetItemGoal(tasks[currentTaskIndex].itemName, tasks[currentTaskIndex].goal);
             UpdateTaskBox();
 
-            // Reset text index before displaying the new task's text
             currentTextIndex = 0;
-            DisplayWizardText();  // Show next task text when advancing.
+            DisplayWizardText(); 
         }
         else
         {
             TaskBoxController.Instance.HideTaskBox();
-            DisplayWizardText();  // Final text after completing all tasks
+            DisplayWizardText(); 
         }
     }
 

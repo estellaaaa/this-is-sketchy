@@ -5,8 +5,8 @@ public class TextBoxController : MonoBehaviour
 {
     public static TextBoxController Instance { get; private set; }
 
-    public GameObject textBox; // Reference to the text box
-    public TextMeshProUGUI textField; // Text display for the text
+    public GameObject textBox;
+    public TextMeshProUGUI textField;
 
     void Awake()
     {
@@ -23,7 +23,6 @@ public class TextBoxController : MonoBehaviour
     void Start()
     {
         Debug.Log("TextBoxController Start");
-        // Ensure the text box is initially disabled
         textBox.SetActive(false);
     }
 
